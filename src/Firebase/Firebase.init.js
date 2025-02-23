@@ -5,13 +5,13 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC27mwmmB91eBwVwcp0Anx9pN-BtGU8ELk",
-  authDomain: "tass-restaurant.firebaseapp.com",
-  projectId: "tass-restaurant",
-  storageBucket: "tass-restaurant.firebasestorage.app",
-  messagingSenderId: "635137001020",
-  appId: "1:635137001020:web:a43013e2d751409fe1a539"
+  apiKey: import.meta.env.VITE_apiKey ,
+  authDomain: import.meta.env.VITE_authDomain ,
+  projectId: import.meta.env.VITE_projectId  ,
+  storageBucket: import.meta.env.VITE_storageBucket,
+  messagingSenderId: import.meta.env.VITE_messagingSenderId ,
+  appId: import.meta.env.VITE_appId
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);

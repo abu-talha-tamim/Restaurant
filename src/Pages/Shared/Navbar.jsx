@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import logo from "/logo.png";
+import { AuthContext } from "../../Provider/AuthProvider";
 
 const Navbar = () => {
+  const { user, logOut } = useContext(AuthContext);
+
+  const handleLogOut = () => {
+    logOut()
+      .then(() => console.log("User logged out"))
+      .catch((error) => console.log(error));
+  };
+
   const linkItems = (
     <>
       <li>
@@ -17,6 +26,11 @@ const Navbar = () => {
       <li>
         <Link to="/contact">Contact</Link>
       </li>
+      {user && (
+        <button onClick={handleLogOut} className="btn btn-ghost">
+          Logout
+        </button>
+      )}
     </>
   );
 
@@ -55,7 +69,8 @@ const Navbar = () => {
           to="/"
           className="text-3xl font-semibold flex items-center space-x-2"
         >
-          <span >Bistro</span><span className="text-blue-600 font-bold underline">Boss</span>
+          <span>Bistro</span>
+          <span className="text-blue-600 font-bold underline">Boss</span>
           <img
             className="w-11 h-11 rounded-lg object-cover"
             src={logo}
@@ -71,9 +86,11 @@ const Navbar = () => {
 
       {/* Right Section */}
       <div className="navbar-end">
-        <Link to="/login" className="btn btn-info px-4 py-2">
-          Login
-        </Link>
+        {!user && (
+          <Link to="/login" className="btn btn-info px-4 py-2">
+            Login
+          </Link>
+        )}
       </div>
     </div>
   );
