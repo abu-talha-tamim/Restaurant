@@ -9,6 +9,10 @@ import Login from "../Pages/Register/Login";
 import Menu from "../Pages/Menu/Menu/Menu";
 import Home from "../Pages/Home/Home";
 import Order from "../Pages/Order/Order";
+import Secrent from "../Pages/Shared/Secrent";
+import Dashboard from "../Layout/Dashboard";
+import Cart from "../Pages/Dashboard/Cart/Cart";
+import AllUsers from "../Pages/AllUsers/AllUsers";
 
 
   const router = createBrowserRouter([
@@ -30,6 +34,10 @@ import Order from "../Pages/Order/Order";
           element: <Order/>,
         },
         {
+          path: 'secret',
+          element: <Secrent/>,
+        },
+        {
             path: 'register',
             element: <Register/>,
         },
@@ -40,6 +48,21 @@ import Order from "../Pages/Order/Order";
        
       ]
     },
+
+    {
+      path: 'dashboard',
+      element: <Dashboard/>,
+      children: [
+        {
+          path: 'cart',
+          element: <Cart/>,
+        },
+        {
+          path: 'users',
+          element: <AllUsers/>,
+        }
+      ]
+    }
   ]);
 
   export default router;

@@ -9,7 +9,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../Provider/AuthProvider";
-
+import SocialLogin from "../../componemts/SocialLogin/SocialLogin";
+const from = location.state?.from?.pathname || "/";
+console.log('state in the location', location.state)
 const Login = () => {
   const [disabled, setDisabled] = useState(true);
   const { signIn } = useContext(AuthContext);
@@ -120,6 +122,7 @@ const Login = () => {
                 />
               </div>
             </form>
+            <SocialLogin/>
             <p>
               <small>
                 New Here? <Link to="/register">Create an account</Link>{" "}
@@ -127,6 +130,7 @@ const Login = () => {
             </p>
           </div>
         </div>
+        
       </div>
     </>
   );

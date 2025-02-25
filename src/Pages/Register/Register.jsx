@@ -1,39 +1,64 @@
-import { Link } from "react-router-dom";
-import Lottie from "lottie-react";
-import LottiData from "../../assets/Animation - 1739195283777.json";
-import { FcGoogle } from "react-icons/fc";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../Provider/AuthProvider";
+import Swal from "sweetalert2";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
+import SocialLogin from "../../componemts/SocialLogin/SocialLogin";
 
 const Register = () => {
+  const axiosPublic = useAxiosPublic();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
-  const { createUser } = useContext(AuthContext);
+  const { createUser, updateUserProfile } = useContext(AuthContext);
+  const [serverError, setServerError] = useState(null);
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
+    setServerError(null); // Reset previous errors
+
     try {
       const result = await createUser(data.email, data.password);
-      const loggedUser = result.user;
+      console.log("User registered:", result.user);
 
-      // Update user profile with name and photo URL
-      await loggedUser.updateProfile({
-        displayName: data.name,
-        photoURL: data.photoURL,
+      // Update the user profile with name and photo URL
+      await updateUserProfile(data.name, data.photoURL);
+
+      // Reset form fields
+      const userInfo = {
+        name: data.name,
+        email: data.email,
+      };
+      axiosPublic.post("/users", userInfo).then((res) => {
+        if (res.data.insertedId) {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "User created successfully!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+
+          // Redirect user after successful registration
+          navigate("/");
+        }
       });
+      reset();
+      // create user entry in the database
 
-      console.log("User registered:", loggedUser);
+      // Show success alert
     } catch (error) {
-      console.error("Registration error:", error);
+      if (error.code === "auth/email-already-in-use") {
+        setServerError("This email is already registered. Try logging in.");
+      } else {
+        setServerError("Registration failed. Please try again.");
+      }
     }
-  };
-
-  const handleGoogleLogin = () => {
-    console.log("Google login clicked");
   };
 
   return (
@@ -42,19 +67,19 @@ const Register = () => {
         <title>Bistro | Register</title>
       </Helmet>
 
-      <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100 px-4 gap-8">
-        {/* Registration Form Card */}
-        <div className="card bg-white w-full max-w-md shadow-2xl p-6 rounded-lg">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
+        <div className="bg-white w-full max-w-md shadow-2xl p-6 rounded-lg">
           <h1 className="text-4xl font-bold text-center mb-6 text-blue-600">
             Register
           </h1>
 
+          {serverError && (
+            <p className="text-red-600 text-center">{serverError}</p>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name Field */}
             <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Name</span>
-              </label>
+              <label className="label">Name</label>
               <input
                 type="text"
                 {...register("name", { required: true })}
@@ -66,11 +91,8 @@ const Register = () => {
               )}
             </div>
 
-            {/* Email Field */}
             <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Email</span>
-              </label>
+              <label className="label">Email</label>
               <input
                 type="email"
                 {...register("email", { required: true })}
@@ -82,11 +104,8 @@ const Register = () => {
               )}
             </div>
 
-            {/* Photo URL Field */}
             <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Photo URL</span>
-              </label>
+              <label className="label">Photo URL</label>
               <input
                 type="text"
                 {...register("photoURL", { required: true })}
@@ -98,11 +117,8 @@ const Register = () => {
               )}
             </div>
 
-            {/* Password Field */}
             <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
+              <label className="label">Password</label>
               <input
                 type="password"
                 {...register("password", {
@@ -135,24 +151,12 @@ const Register = () => {
               )}
             </div>
 
-            {/* Register Button */}
             <div className="form-control mt-4">
               <button className="btn btn-primary w-full">Register</button>
             </div>
           </form>
-
-          <div className="divider">OR</div>
-
-          {/* Google Login Button */}
-          <button
-            onClick={handleGoogleLogin}
-            className="btn btn-outline w-full flex items-center justify-center gap-2"
-          >
-            <FcGoogle size={24} />
-            Continue with Google
-          </button>
-
-          <p className="text-center mt-4 text-gray-600">
+              <SocialLogin/>
+          <p className="text-center mt-4">
             Already have an account?{" "}
             <Link
               to="/login"
@@ -162,8 +166,6 @@ const Register = () => {
             </Link>
           </p>
         </div>
-
-        <Lottie animationData={LottiData} loop className="w-60 h-auto" />
       </div>
     </>
   );
