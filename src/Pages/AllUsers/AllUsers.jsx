@@ -5,16 +5,34 @@ import Swal from "sweetalert2";
 
 const AllUsers = () => {
   const axiosSecure = useAxiosSecure();
-  const { data: users = [] } = useQuery({
+  const { data: users = [], refetch } = useQuery({
+    //  Added refetch
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/users");
+      const res = await axiosSecure.get("/users", {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access-token')}`
+        }
+      });
       return res.data;
     },
   });
-  const handleMakeAdmin = user =>{
-    
-  }
+
+  const handleMakeAdmin = (user) => {
+    axiosSecure.patch(`/users/admin/${user._id}`).then((res) => {
+      console.log(res.data);
+      if (res.data.modifiedCount > 0) {
+        refetch(); // 
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: `${user.name} is an Admin Now!`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
 
   const handleDeleteUser = (user) => {
     Swal.fire({
@@ -29,10 +47,10 @@ const AllUsers = () => {
       if (result.isConfirmed) {
         axiosSecure.delete(`/users/${user._id}`).then((res) => {
           if (res.data.deletedCount > 0) {
-            refetch();
+            refetch(); // ✅ Now refetch is defined
             Swal.fire({
               title: "Deleted!",
-              text: "Your file has been deleted.",
+              text: "User has been deleted.",
               icon: "success",
             });
           }
@@ -73,10 +91,7 @@ const AllUsers = () => {
                       onClick={() => handleMakeAdmin(user)}
                       className="btn btn-lg bg-orange-500"
                     >
-                      <FaUsers
-                        className="text-white 
-                                    text-2xl"
-                      ></FaUsers>
+                      <FaUsers className="text-white text-2xl"></FaUsers>
                     </button>
                   )}
                 </td>

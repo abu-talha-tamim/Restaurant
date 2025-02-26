@@ -5,21 +5,20 @@ import {
   FaEnvelope,
   FaHome,
   FaSearch,
-  FaShoppingBag,
   FaShoppingCart,
   FaUsers,
   FaUtensils,
-  FaVoicemail,
 } from "react-icons/fa";
 import { FaList } from "react-icons/fa6";
 import { NavLink, Outlet } from "react-router-dom";
 import useCart from "../Hooks/useCart";
+import useAdmin from "../Hooks/useAdmin";
 
 const Dashboard = () => {
   const [cart] = useCart();
 
   // Todo
-  const isAdmin = true;
+  const isAdmin = useAdmin();
   return (
     <div className="flex">
       <div className="w-64 min-h-screen bg-orange-400">
