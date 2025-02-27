@@ -13,6 +13,7 @@ import Secrent from "../Pages/Shared/Secrent";
 import Dashboard from "../Layout/Dashboard";
 import Cart from "../Pages/Dashboard/Cart/Cart";
 import AllUsers from "../Pages/AllUsers/AllUsers";
+import AddItems from "../Pages/Dashboard/Cart/Additems/AddItems";
 
 
   const router = createBrowserRouter([
@@ -56,6 +57,11 @@ import AllUsers from "../Pages/AllUsers/AllUsers";
         {
           path: 'cart',
           element: <Cart/>,
+        },
+        // Admin only
+        {
+          path: 'additems',
+          element: <AddItems/>,
         },
         {
           path: 'users',
